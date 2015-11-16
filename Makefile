@@ -32,6 +32,7 @@ BUILT_SRCS_C :=
 OUT = out
 EXE = $(OUT)/$(NAME)
 
+ROOT = ""
 PREFIX = "/usr/local"
 
 CLEAN_SPEC :=

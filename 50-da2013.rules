@@ -1,0 +1,2 @@
+KERNEL=="hidraw*", ATTRS{idVendor}=="1532", ATTRS{idProduct}=="0037", GROUP="razer", MODE="0660"
+

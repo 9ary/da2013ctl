@@ -5,12 +5,14 @@ changes.
 
 ## Compiling
 ```
-make
+$ make
 ```
 
 ## Installing
 ```
-sudo make install
+# make install
+# udevadm control --reload
+# udevadm trigger
 ```
 
 ## Dependencies
