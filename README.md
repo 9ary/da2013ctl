@@ -9,6 +9,7 @@ $ make
 ```
 
 ## Installing
+Create the group `razer` and add yourself to it then:
 ```
 # make install
 # udevadm control --reload
