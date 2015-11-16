@@ -25,6 +25,12 @@ run: all
 	@echo "  $(EXE)"
 	@./$(EXE)
 
+install: all
+	@echo "  INSTALL"
+	@install -d $(PREFIX)/bin
+	@install -m755 $(EXE) $(PREFIX)/bin
+	@install -Dm644 LICENSE $(PREFIX)/share/licenses/$(NAME)/LICENSE
+
 clean:
 	@echo "  RM      $(OUT)"
 	@rm -rf $(OUT)

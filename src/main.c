@@ -6,6 +6,7 @@
 #include <argp.h>
 #include <libudev.h>
 #include "da2013.h"
+#include "version.h"
 
 struct args
 {
@@ -95,6 +96,7 @@ static struct argp argp = {options, parse_opt, NULL, description, NULL, NULL, NU
 
 int main(int argc, char **argv)
 {
+    argp_program_version = git_version;
     argp_parse(&argp, argc, argv, 0, NULL, &args);
 
     if (!args.dev)
