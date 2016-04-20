@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <linux/input.h>
 #include <linux/hidraw.h>
 #include "da2013.h"
@@ -49,15 +50,37 @@ void da2013_cmd_send(int fd)
     // Pretty unreliable unless you do it a few times
     for (int i = 0; i < 3; i++)
     {
-        res = ioctl(fd, HIDIOCSFEATURE(91), (char *) &da2013_cmd);
+        res = ioctl(fd, HIDIOCSFEATURE(sizeof(da2013_cmd)), (char *) &da2013_cmd);
         if (res < 0)
             perror("HIDIOCSFEATURE");
         else
         {
-            res = ioctl(fd, HIDIOCGFEATURE(91), (char *) &da2013_ret);
-            if (res < 0)
-                perror("HIDIOCGFEATURE");
+            for (int j = 0; j < 3; j++)
+            {
+                res = ioctl(fd, HIDIOCGFEATURE(sizeof(da2013_cmd)), (char *) &da2013_ret);
+                if (res == sizeof(da2013_cmd))
+                    break;
+                if (res < 0)
+                    perror("HIDIOCGFEATURE");
+            }
         }
+
+        switch (da2013_cmd.status)
+        {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+                // Command succeeded
+                break;
+            default:
+                fprintf(stderr, "Command %04X/%04X failed with %02X\n",
+                        da2013_cmd.command,
+                        da2013_cmd.request,
+                        da2013_cmd.status);
+        }
+
+        usleep(50 * 1000);
     }
 }
 
