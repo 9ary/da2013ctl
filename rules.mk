@@ -30,8 +30,8 @@ install: all
 	@install -d $(ROOT)/$(PREFIX)/bin
 	@install -m755 $(EXE) $(ROOT)/$(PREFIX)/bin
 	@install -Dm644 LICENSE $(ROOT)/$(PREFIX)/share/licenses/$(NAME)/LICENSE
-	@install -d $(ROOT)/etc/udev/rules.d
-	@install -m644 50-da2013.rules $(ROOT)/etc/udev/rules.d
+	@install -d $(ROOT)/$(PREFIX)/lib/udev/rules.d
+	@install -m644 50-da2013.rules $(ROOT)/$(PREFIX)/lib/udev/rules.d
 
 clean:
 	@echo "  RM      $(OUT)"
