@@ -19,7 +19,7 @@ $(OUT)/%.o: %.c | $(BUILT_HEADERS)
 $(EXE): $(OBJS)
 	@mkdir -p $(dir $@)
 	@echo "  CCLD    $@"
-	@+$(CC) $(LDFLAGS) $^ -o $@
+	@+$(CC) $^ $(LDFLAGS) -o $@
 
 run: all
 	@echo "  $(EXE)"
