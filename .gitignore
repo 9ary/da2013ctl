@@ -1,5 +1,2 @@
-out/
-
-*.swp
-
-.ycm_extra_conf.pyc
+target/
+**/*.rs.bk
