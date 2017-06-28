@@ -24,6 +24,12 @@ pub struct Da2013 {
     fd: io::RawFd,
 }
 
+pub enum Freq {
+    F125,
+    F500,
+    F1000,
+}
+
 pub enum Led {
     Logo,
     Wheel,
@@ -84,12 +90,11 @@ impl Da2013 {
         self.do_cmd(DA2013_CMD_SET, DA2013_REQ_DPI, arg0, 0, 0x06);
     }
 
-    pub fn set_freq(&self, freq: i32) {
+    pub fn set_freq(&self, freq: Freq) {
         let (arg0, footer) = match freq {
-            125 => (8, 0x0C),
-            500 => (2, 0x06),
-            1000 => (1, 0x05),
-            _ => unreachable!(),
+            Freq::F125 => (8, 0x0C),
+            Freq::F500 => (2, 0x06),
+            Freq::F1000 => (1, 0x05),
         };
         self.do_cmd(DA2013_CMD_SET, DA2013_REQ_FREQ, arg0, 0, footer);
     }

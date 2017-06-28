@@ -99,9 +99,9 @@ fn main() {
 
     let freq = matches.opt_str("f").map(|s| {
         match s.as_str() {
-            "125" => 125,
-            "500" => 500,
-            "1000" => 1000,
+            "125" => da2013::Freq::F125,
+            "500" => da2013::Freq::F500,
+            "1000" => da2013::Freq::F1000,
             _ => {
                 println!("Polling rate must be one of 125, 500 or 1000 Hz");
                 process::exit(1);
