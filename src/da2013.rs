@@ -38,7 +38,7 @@ impl Da2013 {
     }
 
     fn do_cmd(&self, command: u16, request: u16, arg0: u16, arg1: u16, footer: u8) {
-        let mut buf = vec![];
+        let mut buf = Vec::with_capacity(91);
 
         // HID report number
         buf.write_u8(0).unwrap();
@@ -56,12 +56,24 @@ impl Da2013 {
         // Padding
         buf.write_u8(0).unwrap();
 
-        // TODO handle errors
-        // may need to implement something similar to the C version
+        // Errors here are considered non-critical
+        // We try multiple times to make sure the device has registered the command, sometimes it
+        // doesn't
         for _ in 0..3 {
             unsafe {
-                hid_ioctl::sfeature(self.fd, buf.as_mut_ptr(), buf.len());
-                hid_ioctl::gfeature(self.fd, buf.as_mut_ptr(), buf.len());
+                match hid_ioctl::sfeature(self.fd, buf.as_mut_ptr(), buf.len()) {
+                    Ok(_) => match hid_ioctl::gfeature(self.fd, buf.as_mut_ptr(), buf.len()) {
+                        // Status field of the response
+                        Ok(_) => match buf[1] {
+                            // We expect the same values as librazer/razercfg does
+                            0 | 1 | 2 | 3 => {},
+                            e => println!("Command {:#X}/{:#X} failed with {:#X}",
+                                          command, request, e),
+                        },
+                        Err(e) => println!("HIDIOCGFEATURE: {}", e.to_string()),
+                    },
+                    Err(e) => println!("HIDIOCGFEATURE: {}", e.to_string()),
+                }
             }
         }
     }
