@@ -24,6 +24,17 @@ fn get_hidraw_node() -> Option<std::path::PathBuf> {
     None
 }
 
+fn boolarg(a: String, argname: &str) -> bool {
+    match a.to_lowercase().as_str() {
+        "on" | "true" | "1" | "enabled" => true,
+        "off" | "false" | "0" | "disabled" => false,
+        _ => {
+            println!("Invalid boolean for {}", argname);
+            std::process::exit(1);
+        }
+    }
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let progname = args[0].clone();
@@ -63,6 +74,27 @@ fn main() {
         }
     };
 
+    let dpi = matches.opt_str("r").map(|s| {
+        let r = s.split(',').map(|s| match s.parse::<i32>() {
+            Ok(r) => {
+                if r < 100 || r > 6400 || (r % 100 != 0) {
+                    println!("Invalid resolution value");
+                    std::process::exit(1);
+                }
+                r
+            }
+            Err(_) => {
+                println!("Resolution is not a valid integer");
+                std::process::exit(1);
+            }
+        }).collect::<Vec<_>>();
+        if r.len() > 2 {
+            println!("Too many values for resolution");
+            std::process::exit(1);
+        }
+        r
+    });
+
     let freq = matches.opt_str("f").map(|s| {
         match s.as_str() {
             "125" => 125,
@@ -74,6 +106,9 @@ fn main() {
             }
         }
     });
+
+    let led_logo = matches.opt_str("l").map(|s| boolarg(s, "logo LED"));
+    let led_wheel = matches.opt_str("w").map(|s| boolarg(s, "wheel LED"));
 
     println!("Using device {}", dev.to_str().unwrap());
 }
