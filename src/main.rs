@@ -120,16 +120,26 @@ fn main() {
         }
     };
 
+    let mut worked = false;
+
     if let Some(res) = dpi {
         mouse.set_res(res);
+        worked = true;
     }
     if let Some(freq) = freq {
         mouse.set_freq(freq);
+        worked = true;
     }
     if let Some(state) = led_logo {
         mouse.set_led(da2013::Led::Logo, state);
+        worked = true;
     }
     if let Some(state) = led_wheel {
         mouse.set_led(da2013::Led::Wheel, state);
+        worked = true;
+    }
+
+    if !worked {
+        usage(&progname, opts);
     }
 }
