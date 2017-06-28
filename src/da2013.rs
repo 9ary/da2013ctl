@@ -44,23 +44,25 @@ impl Da2013 {
     }
 
     fn do_cmd(&self, command: u16, request: u16, arg0: u16, arg1: u16, footer: u8) {
-        let mut buf = Vec::with_capacity(91);
+        let mut buf = Vec::with_capacity(1024);
 
         // HID report number
-        buf.write_u8(0).unwrap();
+        buf.push(0);
         // Status
-        buf.write_u8(0).unwrap();
+        buf.push(0);
         // Padding
-        for _ in 0..3 { buf.write_u8(0).unwrap(); }
+        let mut zeros = vec![0; 3];
+        buf.append(&mut zeros);
         buf.write_u16::<LittleEndian>(command).unwrap();
         buf.write_u16::<LittleEndian>(request).unwrap();
         buf.write_u16::<LittleEndian>(arg0).unwrap();
         buf.write_u16::<LittleEndian>(arg1).unwrap();
         // Padding
-        for _ in 0..76 { buf.write_u8(0).unwrap(); }
-        buf.write_u8(footer).unwrap();
+        let mut zeros = vec![0; 76];
+        buf.append(&mut zeros);
+        buf.push(footer);
         // Padding
-        buf.write_u8(0).unwrap();
+        buf.push(0);
 
         // Errors here are considered non-critical
         // We try multiple times to make sure the device has registered the command, sometimes it
