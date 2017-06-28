@@ -1,9 +1,10 @@
-use std::{env,path,process};
-
+#[macro_use]
+extern crate nix;
 extern crate byteorder;
 extern crate getopts;
 extern crate libudev;
-#[macro_use] extern crate nix;
+
+use std::{env,path,process};
 
 mod da2013;
 
@@ -14,8 +15,7 @@ fn usage(progname: &str, opts: getopts::Options) {
 
 fn get_hidraw_node() -> Option<path::PathBuf> {
     let udev = libudev::Context::new().expect("Failed to create udev context");
-    let mut enumerator = libudev::Enumerator::new(&udev)
-        .expect("Failed to obtain udev enumerator");
+    let mut enumerator = libudev::Enumerator::new(&udev).expect("Failed to obtain udev enumerator");
 
     enumerator.match_subsystem("hidraw").expect("Failed to match hidraw subsystem");
 
@@ -89,8 +89,10 @@ fn main() {
                 println!("Invalid resolution value");
                 process::exit(1);
             }
+
             r
         }
+
         Err(_) => {
             println!("Resolution is not a valid integer");
             process::exit(1);
@@ -126,14 +128,17 @@ fn main() {
         mouse.set_res(res);
         worked = true;
     }
+
     if let Some(freq) = freq {
         mouse.set_freq(freq);
         worked = true;
     }
+
     if let Some(state) = led_logo {
         mouse.set_led(da2013::Led::Logo, state);
         worked = true;
     }
+
     if let Some(state) = led_wheel {
         mouse.set_led(da2013::Led::Wheel, state);
         worked = true;
