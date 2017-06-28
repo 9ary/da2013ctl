@@ -5,13 +5,14 @@ changes.
 
 ## Compiling
 ```
-$ make
+$ cargo build --release
 ```
 
 ## Installing
 Create the group `razer` and add yourself to it then:
 ```
-# make install
+# cargo install --root /usr/local
+# sudo install -m644 50-da2013.rules /etc/udev/rules.d
 # udevadm control --reload
 # udevadm trigger
 ```
