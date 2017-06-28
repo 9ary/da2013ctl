@@ -72,7 +72,7 @@ impl Da2013 {
                         // Status field of the response
                         Ok(_) => match buf[1] {
                             // We expect the same values as librazer/razercfg does
-                            0 | 1 | 2 | 3 => {},
+                            0 ... 3 => {},
                             e => println!("Command {:#X}/{:#X} failed with {:#X}",
                                           command, request, e),
                         },
