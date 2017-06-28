@@ -13,16 +13,19 @@ fn usage(progname: &str, opts: getopts::Options) {
 }
 
 fn get_hidraw_node() -> Option<path::PathBuf> {
-    let udev = libudev::Context::new().unwrap();
-    let mut enumerator = libudev::Enumerator::new(&udev).unwrap();
+    let udev = libudev::Context::new().expect("Failed to create udev context");
+    let mut enumerator = libudev::Enumerator::new(&udev)
+        .expect("Failed to obtain udev enumerator");
 
-    enumerator.match_subsystem("hidraw").unwrap();
+    enumerator.match_subsystem("hidraw").expect("Failed to match hidraw subsystem");
 
-    for device in enumerator.scan_devices().unwrap() {
+    for device in enumerator.scan_devices().expect("Failed to scan devices") {
         if let Some(usb_parent) = device.parent_with_subsystem_devtype("usb", "usb_device") {
-            if usb_parent.attribute_value("idVendor").unwrap() == "1532" &&
-                usb_parent.attribute_value("idProduct").unwrap() == "0037" {
-                return Some(device.devnode().unwrap().to_owned());
+            if usb_parent.attribute_value("idVendor")
+                .expect("Failed to get vendor ID") == "1532" &&
+                usb_parent.attribute_value("idProduct")
+                .expect("Failed to get product ID") == "0037" {
+                return Some(device.devnode().expect("Failed to find /dev node").to_owned());
             }
         }
     }
@@ -109,8 +112,13 @@ fn main() {
     let led_logo = matches.opt_str("l").map(|s| boolarg(s, "logo LED"));
     let led_wheel = matches.opt_str("w").map(|s| boolarg(s, "wheel LED"));
 
-    // TODO handle errors
-    let mouse = da2013::Da2013::open(dev).unwrap();
+    let mouse = match da2013::Da2013::open(dev) {
+        Ok(r) => r,
+        Err(e) => {
+            println!("Failed to open device: {}", e.to_string());
+            process::exit(1);
+        }
+    };
 
     if let Some(res) = dpi {
         mouse.set_res(res);

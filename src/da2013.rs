@@ -41,20 +41,20 @@ impl Da2013 {
         let mut buf = vec![];
 
         // HID report number
-        buf.write_u8(0);
+        buf.write_u8(0).unwrap();
         // Status
-        buf.write_u8(0);
+        buf.write_u8(0).unwrap();
         // Padding
-        for _ in 0..3 { buf.write_u8(0); }
-        buf.write_u16::<LittleEndian>(command);
-        buf.write_u16::<LittleEndian>(request);
-        buf.write_u16::<LittleEndian>(arg0);
-        buf.write_u16::<LittleEndian>(arg1);
+        for _ in 0..3 { buf.write_u8(0).unwrap(); }
+        buf.write_u16::<LittleEndian>(command).unwrap();
+        buf.write_u16::<LittleEndian>(request).unwrap();
+        buf.write_u16::<LittleEndian>(arg0).unwrap();
+        buf.write_u16::<LittleEndian>(arg1).unwrap();
         // Padding
-        for _ in 0..76 { buf.write_u8(0); }
-        buf.write_u8(footer);
+        for _ in 0..76 { buf.write_u8(0).unwrap(); }
+        buf.write_u8(footer).unwrap();
         // Padding
-        buf.write_u8(0);
+        buf.write_u8(0).unwrap();
 
         // TODO handle errors
         // may need to implement something similar to the C version
@@ -95,6 +95,6 @@ impl Da2013 {
 
 impl Drop for Da2013 {
     fn drop(&mut self) {
-        unistd::close(self.fd);
+        unistd::close(self.fd).expect("Failed to close device");
     }
 }
