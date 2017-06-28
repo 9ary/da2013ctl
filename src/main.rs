@@ -52,7 +52,7 @@ fn main() {
         Err(f) => {
             println!("{}", f.to_string());
             usage(&progname, opts);
-            return;
+            std::process::exit(1);
         }
     };
 
@@ -70,7 +70,7 @@ fn main() {
             println!("Can't detect the device with udev, make sure it's plugged in, \
                      or specify -d");
             usage(&progname, opts);
-            return;
+            std::process::exit(1);
         }
     };
 
