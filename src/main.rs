@@ -1,12 +1,18 @@
+use std::{env,path,process};
+
+extern crate byteorder;
 extern crate getopts;
 extern crate libudev;
+#[macro_use] extern crate nix;
+
+mod da2013;
 
 fn usage(progname: &str, opts: getopts::Options) {
     let brief = format!("Usage: {} [options]", progname);
     print!("{}", opts.usage(&brief));
 }
 
-fn get_hidraw_node() -> Option<std::path::PathBuf> {
+fn get_hidraw_node() -> Option<path::PathBuf> {
     let udev = libudev::Context::new().unwrap();
     let mut enumerator = libudev::Enumerator::new(&udev).unwrap();
 
@@ -30,13 +36,13 @@ fn boolarg(a: String, argname: &str) -> bool {
         "off" | "false" | "0" | "disabled" => false,
         _ => {
             println!("Invalid boolean for {}", argname);
-            std::process::exit(1);
+            process::exit(1);
         }
     }
 }
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
+    let args: Vec<String> = env::args().collect();
     let progname = args[0].clone();
 
     let mut opts = getopts::Options::new();
@@ -52,7 +58,7 @@ fn main() {
         Err(f) => {
             println!("{}", f.to_string());
             usage(&progname, opts);
-            std::process::exit(1);
+            process::exit(1);
         }
     };
 
@@ -64,35 +70,28 @@ fn main() {
 
     // TODO I'm sure this can be improved somehow
     let dev = match (matches.opt_str("d"), get_hidraw_node()) {
-        (Some(d), _) => std::path::PathBuf::from(d),
+        (Some(d), _) => path::PathBuf::from(d),
         (None, Some(d)) => d,
         (None, None) => {
             println!("Can't detect the device with udev, make sure it's plugged in, \
                      or specify -d");
             usage(&progname, opts);
-            std::process::exit(1);
+            process::exit(1);
         }
     };
 
-    let dpi = matches.opt_str("r").map(|s| {
-        let r = s.split(',').map(|s| match s.parse::<i32>() {
-            Ok(r) => {
-                if r < 100 || r > 6400 || (r % 100 != 0) {
-                    println!("Invalid resolution value");
-                    std::process::exit(1);
-                }
-                r
+    let dpi = matches.opt_str("r").map(|s| match s.parse::<i32>() {
+        Ok(r) => {
+            if r < 100 || r > 6400 || (r % 100 != 0) {
+                println!("Invalid resolution value");
+                process::exit(1);
             }
-            Err(_) => {
-                println!("Resolution is not a valid integer");
-                std::process::exit(1);
-            }
-        }).collect::<Vec<_>>();
-        if r.len() > 2 {
-            println!("Too many values for resolution");
-            std::process::exit(1);
+            r
         }
-        r
+        Err(_) => {
+            println!("Resolution is not a valid integer");
+            process::exit(1);
+        }
     });
 
     let freq = matches.opt_str("f").map(|s| {
@@ -102,7 +101,7 @@ fn main() {
             "1000" => 1000,
             _ => {
                 println!("Polling rate must be one of 125, 500 or 1000 Hz");
-                std::process::exit(1);
+                process::exit(1);
             }
         }
     });
@@ -110,5 +109,19 @@ fn main() {
     let led_logo = matches.opt_str("l").map(|s| boolarg(s, "logo LED"));
     let led_wheel = matches.opt_str("w").map(|s| boolarg(s, "wheel LED"));
 
-    println!("Using device {}", dev.to_str().unwrap());
+    // TODO handle errors
+    let mouse = da2013::Da2013::open(dev).unwrap();
+
+    if let Some(res) = dpi {
+        mouse.set_res(res);
+    }
+    if let Some(freq) = freq {
+        mouse.set_freq(freq);
+    }
+    if let Some(state) = led_logo {
+        mouse.set_led(da2013::Led::Logo, state);
+    }
+    if let Some(state) = led_wheel {
+        mouse.set_led(da2013::Led::Wheel, state);
+    }
 }

@@ -4,5 +4,7 @@ version = "0.1.0"
 authors = ["Dan Elkouby <streetwalrus@codewalr.us>"]
 
 [dependencies]
+byteorder = "1.0"
 getopts = "0.2"
 libudev = { git = "https://github.com/Streetwalrus/libudev-rs" }
+nix = "0.8"
