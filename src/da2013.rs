@@ -7,7 +7,7 @@ use nix::sys::stat::Mode;
 use nix::unistd;
 
 mod hid_ioctl {
-    const HID_IOC_MAGIC: u8 = 'H' as u8;
+    const HID_IOC_MAGIC: u8 = b'H';
     const HID_IOC_NR_SFEATURE: u8 = 0x06;
     const HID_IOC_NR_GFEATURE: u8 = 0x07;
 
