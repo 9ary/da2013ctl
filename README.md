@@ -23,3 +23,7 @@ on the `hidraw` API.
 
 ## Usage
 See `da2013ctl --help` for more info.
+
+## Distro packages
+- PKGBUILDs are available in the AUR for Arch Linux and most derivatives:
+  [stable](https://aur.archlinux.org/packages/da2013ctl/), [git](https://aur.archlinux.org/packages/da2013ctl-git).
