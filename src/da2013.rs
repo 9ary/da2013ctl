@@ -38,6 +38,7 @@ pub enum Led {
 impl Da2013 {
     pub fn open<P: nix::NixPath>(path: P) -> Result<Da2013, nix::Error> {
         let fd = fcntl::open(&path, fcntl::O_RDWR, Mode::empty())?;
+
         Ok(Da2013 {
             fd: fd,
         })
@@ -48,19 +49,25 @@ impl Da2013 {
 
         // HID report number
         buf.push(0);
+
         // Status
         buf.push(0);
+
         // Padding
         let mut zeros = vec![0; 3];
         buf.append(&mut zeros);
+
         buf.write_u16::<LittleEndian>(command).unwrap();
         buf.write_u16::<LittleEndian>(request).unwrap();
         buf.write_u16::<LittleEndian>(arg0).unwrap();
         buf.write_u16::<LittleEndian>(arg1).unwrap();
+
         // Padding
         let mut zeros = vec![0; 76];
         buf.append(&mut zeros);
+
         buf.push(footer);
+
         // Padding
         buf.push(0);
 
@@ -89,6 +96,7 @@ impl Da2013 {
     pub fn set_res(&self, res: i32) {
         let res = (res / 100 - 1) * 4;
         let arg0 = (res | (res << 8)) as u16;
+
         self.do_cmd(DA2013_CMD_SET, DA2013_REQ_DPI, arg0, 0, 0x06);
     }
 
@@ -98,6 +106,7 @@ impl Da2013 {
             Freq::F500 => (2, 0x06),
             Freq::F1000 => (1, 0x05),
         };
+
         self.do_cmd(DA2013_CMD_SET, DA2013_REQ_FREQ, arg0, 0, footer);
     }
 
@@ -108,6 +117,7 @@ impl Da2013 {
             (Led::Wheel, true) => (0x0101, 1, 0x01),
             (Led::Wheel, false) => (0x0101, 0, 0x00),
         };
+
         self.do_cmd(DA2013_CMD_SET, DA2013_REQ_LED, arg0, arg1, footer);
     }
 }
