@@ -1,7 +1,7 @@
 [package]
 name = "da2013ctl"
 version = "1.0.0"
-authors = ["Dan Elkouby <streetwalrus@codewalr.us>"]
+authors = ["Dan Elkouby <streetwalkermc@gmail.com>"]
 
 [dependencies]
 byteorder = "1.0"
