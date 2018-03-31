@@ -1,4 +1,4 @@
-# da2013ctl
+# dannyboard
 A simpler alternative to [razercfg](http://bues.ch/cms/hacking/razercfg.html),
 tailored specifically for the DeathAdder 2013 for Synapse-like seamless setting
 changes.
@@ -22,8 +22,8 @@ Only `libudev` is required. This will only work on Linux kernels since it relies
 on the `hidraw` API.
 
 ## Usage
-See `da2013ctl --help` for more info.
+See `dannyboard --help` for more info.
 
 ## Distro packages
 - PKGBUILDs are available in the AUR for Arch Linux and most derivatives:
-  [stable](https://aur.archlinux.org/packages/da2013ctl/), [git](https://aur.archlinux.org/packages/da2013ctl-git).
+  [stable](https://aur.archlinux.org/packages/dannyboard/), [git](https://aur.archlinux.org/packages/dannyboard-git).
